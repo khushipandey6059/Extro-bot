@@ -1,0 +1,32 @@
+import os
+from flask import Flask
+import threading
+import telebot
+
+# Bot token Render me dalenge
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+
+bot = telebot.TeleBot(BOT_TOKEN) if BOT_TOKEN else None
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Extro Bot is Running!"
+
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.reply_to(message, "Hello! I am Extro Bot 🎬\nMovie ka naam bhejo.")
+
+@bot.message_handler(func=lambda m: True)
+def handle_movie(message):
+    bot.reply_to(message, f"Aapne bheja: {message.text}\nAbhi search feature add karenge!")
+
+def run_bot():
+    if bot:
+        bot.infinity_polling()
+
+if __name__ == "__main__":
+    threading.Thread(target=run_bot).start()
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
